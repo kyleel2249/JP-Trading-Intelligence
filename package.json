@@ -1,12 +1,14 @@
 {
-  "name":"jp-trading-intelligence",
-  "private":true,
-  "version":"0.1.0",
-  "scripts":{
-    "check":"node --check app.js && node --check worker/index.js",
-    "dev":"wrangler dev",
-    "deploy":"wrangler deploy",
-    "db:migrate":"wrangler d1 migrations apply jp-trading-intelligence --remote"
+  "name": "jp-trading-intelligence",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "check": "node --check public/app.js && node --check worker/index.js",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate": "wrangler d1 migrations apply jp-trading-intelligence --remote"
   },
-  "devDependencies":{"wrangler":"^4.48.0"}
+  "devDependencies": {
+    "wrangler": "^4.48.0"
+  }
 }
