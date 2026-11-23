@@ -1,4 +1,4 @@
-(function(root,factory){const api=f();if(typeof module==="object"&&module.exports)module.exports=api;if(root)root.JPTISession5=api})(typeof globalThis!=="undefined"?globalThis:this,function(){
+(function(root,factory){const api=factory();if(typeof module==="object"&&module.exports)module.exports=api;if(root)root.JPTISession5=api})(typeof globalThis!=="undefined"?globalThis:this,function(){
 "use strict";
 function clamp(v,a,b){v=Number(v)||0;return Math.min(b,Math.max(a,v))}
 function mean(a){return a.length?a.reduce((s,v)=>s+v,0)/a.length:null}
