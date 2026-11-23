@@ -88,4 +88,29 @@ function loadSessionOutcomes(){try{const rows=JSON.parse(localStorage.getItem("j
 function saveSessionOutcome(){const row={sessionId:$("#outcomesession").value,result:$("#outcomeresult").value,rMultiple:$("#outcomeresult").value==="loss"?-Math.abs(Number($("#outcomer").value)||1):$("#outcomeresult").value==="breakeven"?0:Math.abs(Number($("#outcomer").value)||1),symbol:S.symbol,market:S.kind,exchange:S.ex,ts:Date.now()};SESSION_ENGINE.recordOutcome(row);const rows=JSON.parse(localStorage.getItem("jpti-session-outcomes")||"[]");rows.push(row);localStorage.setItem("jpti-session-outcomes",JSON.stringify(rows.slice(-1000)));$("#outcomestatus").textContent=rows.length+" outcomes saved locally · Alpha gate "+(SESSION_ENGINE.performance()[row.sessionId].trades>=30?"eligible":"30 required per session");renderSessionIntelligence();score()}
 $("#recordoutcome").onclick=saveSessionOutcome;loadSessionOutcomes();
 setInterval(renderSessionIntelligence,1000);renderSessionIntelligence();
+// Session Intelligence 5.0 integration layer (additive; existing trading views remain untouched)
+const S5=new window.JPTISession5.SessionIntelligence5();
+const S5APIS=[
+{name:"Bitget",url:"https://api.bitget.com/api/v2/spot/market/tickers?symbol=BTCUSDT"},
+{name:"Binance",url:"https://api.binance.com/api/v3/ping"},
+{name:"Bybit",url:"https://api.bybit.com/v5/market/time"},
+{name:"OKX",url:"https://www.okx.com/api/v5/public/time"},
+{name:"CoinGecko",url:"https://api.coingecko.com/api/v3/ping"},
+{name:"DexScreener",url:"https://api.dexscreener.com/latest/dex/search?q=bitcoin"},
+{name:"DeFiLlama",url:"https://api.llama.fi/protocols"},
+{name:"Alternative.me Fear & Greed",url:"https://api.alternative.me/fng/?limit=1"},
+{name:"Coinbase",url:"https://api.exchange.coinbase.com/products/BTC-USD/ticker"},
+{name:"Kraken",url:"https://api.kraken.com/0/public/Ticker?pair=XBTUSD"}
+];
+async function S5probe(){const el=$("#s5feeds");if(!el)return;el.innerHTML="";const results=await Promise.all(S5APIS.map(async api=>{const start=Date.now();try{const res=await fetch(api.url,{signal:AbortSignal.timeout(7000),cache:"no-store"});S5.updateFeed(api.name,{ts:Date.now(),ok:res.ok,latency:Date.now()-start,error:res.ok?null:"HTTP "+res.status});return{name:api.name,ok:res.ok,ms:Date.now()-start,status:res.status}}catch(err){S5.updateFeed(api.name,{ts:Date.now(),ok:false,latency:Date.now()-start,error:String(err).slice(0,120)});return{name:api.name,ok:false,ms:Date.now()-start,status:"blocked/CORS/timeout"}}}));el.innerHTML=results.map(x=>'<div class="s5-feed"><b>'+x.name+'</b><span class="'+(x.ok?'positive':'negative')+'">'+(x.ok?'ONLINE':'UNAVAILABLE')+'</span><small>'+x.status+' · '+x.ms+' ms</small></div>').join("");}
+function S5render(){const p=$("#s5perf"),d=$("#s5decay"),a=$("#s5audit"),rp=$("#s5replay");if(!p)return;const e=S5.expectancy();p.innerHTML='<div class="s5stats"><div><small>Recorded outcomes</small><strong>'+e.trades+'</strong></div><div><small>Win rate</small><strong>'+(e.winRate===null?'—':(e.winRate*100).toFixed(1)+'%')+'</strong></div><div><small>Expectancy</small><strong>'+(e.expectancy===null?'—':e.expectancy.toFixed(3)+' R')+'</strong></div><div><small>Net R</small><strong>'+e.netR.toFixed(2)+'</strong></div><div><small>Profit factor</small><strong>'+(e.profitFactor===null?'—':e.profitFactor.toFixed(2))+'</strong></div></div>';
+const decay=S5.decay(),rank=S5.rankWindows({minimumSample:5});d.innerHTML='<h4>Setup decay</h4>'+Object.entries(decay).map(([k,v])=>'<div class="s5-row">'+k+' <span>'+((v.recentExpectancy??0).toFixed(2))+'R recent · '+(v.decaying?'DECAY':'stable / sample-limited')+'</span></div>').join("")+'<h4>Time windows</h4>'+rank.map((x,i)=>'<div class="s5-row">'+(i+1)+'. '+x.window+' <span>'+(x.expectancy===null?'n/a':x.expectancy.toFixed(2)+'R')+' · '+x.trades+' trades</span></div>').join("");
+const events=S5.events.slice(-30).reverse();a.innerHTML=events.length?events.map(x=>'<div class="s5-row"><time>'+new Date(x.ts).toLocaleString()+'</time><b>'+x.type+'</b><span>'+x.symbol+' '+x.session+' '+(x.falseSweep?'false sweep tagged':'')+'</span></div>').join(""):"No events collected yet. Use a connected feed or record outcomes/events from session signals.";
+rp.innerHTML=S5.replay.events.length?'<p>Replay cursor: '+S5.replay.cursor+'/'+S5.replay.events.length+'</p><pre>'+JSON.stringify(S5.replay.events[S5.replay.cursor-1]||S5.replay.events[0],null,2)+'</pre>':'Replay is empty. Events are captured when the 5.0 collector receives signals.'}
+$("#s5refresh").onclick=S5probe;$("#s5export").onclick=()=>{const data=JSON.stringify(S5.exportData(),null,2);const blob=new Blob([data],{type:"application/json"}),url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download="jpti-session-intelligence-5.json";link.click();URL.revokeObjectURL(url)};
+$("#s5riskcalc").onclick=()=>{const v=S5.survival({equity:+$("#s5equity").value,riskPct:+$("#s5risk").value,dailyLossPct:+$("#s5loss").value,drawdownPct:+$("#s5dd").value});$("#s5riskout").innerHTML='<p>Risk/trade: '+v.riskPerTrade.toFixed(2)+' · '+(v.blocked?'LIMIT BREACHED':'Within configured limits')+'</p>'};
+$("#s5reset").onclick=()=>{S5.setReplay();S5render()};$("#s5step").onclick=()=>{if(!S5.replay.events.length)S5.setReplay();const x=S5.replayStep();$("#s5replay").textContent=x?JSON.stringify(x,null,2):"Replay complete";S5render()};
+const s5time=$("#s5seek");if(s5time)s5time.onchange=()=>{const ts=Date.parse(s5time.value);if(Number.isFinite(ts)){S5.setReplay();S5.replaySeek(ts);S5render()}};
+S5.setReplay();S5probe();S5render();
+
 })();
