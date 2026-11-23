@@ -62,3 +62,11 @@ Live execution is disabled. Paper orders are simulated in the browser and are no
 
 ## Roadmap
 Regime engine, order-flow/liquidity, Monte Carlo, portfolio survival, adaptive strategies and decay monitoring, market fingerprints, opportunity radar, liquidation intelligence, macro/event research, execution optimization, trade memory, collision detection, counterfactuals, token integrity, institutional filing research, forecast calibration, replay, immutable audits, futures/CFD integrations and server-side risk/execution.
+
+## Session Intelligence 4.0
+- IANA timezone-aware Sydney, Tokyo, London and New York clocks; DST is resolved from each market's timezone rather than fixed UTC offsets.
+- Live overlap display, session transition memory, per-session high/low/range/volume aggregation, and candle-tagged session history.
+- Conservative setup classifier for failed recent-high/low breaks and session range expansion candidates, with transparent evidence notes and low/moderate candidate scores.
+- Session performance ledger accepts explicitly recorded outcomes, calculates win rate, net R and sample quality, and exposes an Alpha evidence contract. Alpha weighting is ineligible until a session has at least 30 recorded outcomes; no automatic empirical weighting or performance claims are made from unlabelled data.
+- The default session windows use local market hours (Sydney 08:00–17:00, Tokyo 09:00–18:00, London 08:00–17:00, New York 08:00–17:00). Windows are configurable through the engine API and validated against IANA timezones.
+- Session range history and outcome records are currently browser-runtime memory only; no D1 persistence or user-facing outcome-entry form is included in this milestone. Candle sampling follows the selected chart timeframe, so intrabar sweeps and exact session-open prices can be missed.
