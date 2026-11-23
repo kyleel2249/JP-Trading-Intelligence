@@ -15,13 +15,13 @@ CREATE TABLE IF NOT EXISTS forecasts (
 );
 CREATE INDEX IF NOT EXISTS forecasts_symbol_created_idx ON forecasts(symbol, created_at DESC);
 CREATE TABLE IF NOT EXISTS journal_events (
- id TEXT PRIMARY PRIMARY KEY,
+ id TEXT PRIMARY KEY,
  event_type TEXT NOT NULL,
  payload TEXT NOT NULL,
  created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS paper_orders (
- id TEXT PRIMARY PRIMARY KEY,
+ id TEXT PRIMARY KEY,
  symbol TEXT NOT NULL,
  side TEXT NOT NULL CHECK(side IN ('buy','sell')),
  quantity REAL NOT NULL CHECK(quantity > 0),
