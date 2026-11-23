@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "check": "node --check public/app.js && node --check public/liquidity-engine.js && node --check worker/index.js && npm test",
+    "check": "node --check public/app.js && node --check public/liquidity-engine.js && node --check public/session-engine.js && node --check worker/index.js && npm test",
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:migrate": "wrangler d1 migrations apply jp-trading-intelligence --remote",
