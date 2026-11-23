@@ -16,13 +16,13 @@ function summarizeBook(b){
  return{ask,bid,aQty,bQty,imbalance:(bQty-aQty)/(bQty+aQty||1),spread,mid,micro,wallA,wallB}
 }
 function estimateImpact(side,quantity){
- const b=S.bookData;if!b||!(quantity>0)return null;
+ const b=S.bookData;if(!b||!(quantity>0))return null;
  const levels=side==="buy"?b.asks:b.bids.slice().reverse();let left=quantity,filled=0,cost=0,top=levels[0]?.price||null;
  for(const l of levels){const take=Math.min(left,l.qty);if(take>0){filled+=take;cost+=take*l.price;left-=take}if(left<=1e-12)break}
  return{filled,remaining:left,avg:filled?cost/filled:null,notional:cost,top,complete:left<=1e-12}
 }
 function renderBook(){
- const b=S.bookData;if!b)return;const s=summarizeBook(b),rows=[],max=Math.max(...s.ask.concat(s.bid).map(x=>x.price*x.qty),1);
+ const b=S.bookData;if(!b)return;const s=summarizeBook(b),rows=[],max=Math.max(...s.ask.concat(s.bid).map(x=>x.price*x.qty),1);
  [[s.ask.slice(0,10).reverse(),"ask"],[s.bid.slice(-10),"bid"]].forEach(([side,cls])=>{let cum=0;side.forEach(l=>{cum+=l.qty;rows.push({...l,total:cum,cls})})});
  const el=$("#book");if(el)el.innerHTML=rows.map(x=>'<div class="bookrow '+x.cls+'"><i class="depth" style="width:'+Math.min(100,x.total*x.price/max*100)+'%"></i><span>'+f(x.price)+'</span><span>'+x.qty.toFixed(4)+'</span><span>'+f(x.total)+'</span></div>').join("");
  const metrics=$("#bookmetrics");if(metrics)metrics.innerHTML='<div class="bookstat"><small>SPREAD</small><b>'+(s.spread===null?"—":f(s.spread))+'</b><small>Mid '+(s.mid===null?"—":f(s.mid))+'</small></div><div class="bookstat"><small>DEPTH IMBALANCE</small><b class="'+(s.imbalance>=0?"positive":"negative")+'">'+(s.imbalance>=0?"+":"")+Math.round(s.imbalance*100)+'%</b><small>Top 10 visible levels</small></div><div class="bookstat"><small>MICROPRICE</small><b>'+(s.micro===null?"—":f(s.micro))+'</b><small>Queue-weighted top quote</small></div><div class="bookstat"><small>ASK WALL</small><b>'+f(s.wallA.price)+'</b><small>'+f(s.wallA.qty)+' units</small></div><div class="bookstat"><small>BID WALL</small><b>'+f(s.wallB.price)+'</b><small>'+f(s.wallB.qty)+' units</small></div><div class="bookstat"><small>SNAPSHOT TIME</small><b>'+new Date(S.bookUpdatedAt).toLocaleTimeString()+'</b><small>Single depth snapshot</small></div>';
