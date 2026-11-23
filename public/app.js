@@ -81,8 +81,10 @@ function updateSessionEngine(candle){
  renderSessionIntelligence();
  if(latestSessionResult?.setup){const ev=latestSessionResult.setup;$("#sessionalpha").title=JSON.stringify(SESSION_ENGINE.alphaEvidence(ev))}
 }
-\n
+
+
 function loadSessionOutcomes(){try{const rows=JSON.parse(localStorage.getItem("jpti-session-outcomes")||"[]");rows.forEach(x=>{try{SESSION_ENGINE.recordOutcome(x)}catch{}})}catch{}}
 function saveSessionOutcome(){const row={sessionId:$("#outcomesession").value,result:$("#outcomeresult").value,rMultiple:Number($("#outcomer").value)||0,ts:Date.now()};SESSION_ENGINE.recordOutcome(row);const rows=JSON.parse(localStorage.getItem("jpti-session-outcomes")||"[]");rows.push(row);localStorage.setItem("jpti-session-outcomes",JSON.stringify(rows.slice(-1000)));$("#outcomestatus").textContent=rows.length+" outcomes saved locally · Alpha gate "+(SESSION_ENGINE.performance()[row.sessionId].trades>=30?"eligible":"30 required per session");renderSessionIntelligence();score()}
 $("#recordoutcome").onclick=saveSessionOutcome;loadSessionOutcomes();
-setInterval(renderSessionIntelligence,1000);renderSessionIntelligence();\n})();
+setInterval(renderSessionIntelligence,1000);renderSessionIntelligence();
+})();
