@@ -13,4 +13,4 @@ jobs:
         with:
           node-version: 20
       - run: npm run check
-      - run: test -s index.html && test -s styles.css && test -s app.js && test -s worker/index.js && test -s migrations/0001_init.sql
+      - run: test -s public/index.html && test -s public/styles.css && test -s public/app.js && test -s worker/index.js && test -s migrations/0001_init.sql
