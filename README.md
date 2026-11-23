@@ -3,6 +3,11 @@
 Cloudflare-first multi-market research and trading terminal. This initial foundation provides a dark, full-width chart workspace, local candle-based strategy signals, paper-only ticket, browser journal and initial API Worker.
 
 ## Included
+- Persistent local order-book depth snapshots (8-second sampling, 240-point cap) keyed by exchange/instrument/symbol; local bid/ask liquidity change comparisons, snapshot imbalance history and chart liquidity heatmap bands.
+- Candle-level aggressor delta table from buffered live trade prints, with unknown-side volume and limited-history warnings; flow is venue-local, not consolidated.
+- Liquidity heatmap toggle on the chart; historical depth samples overlay recent candles, and snapshot-based depth trends remain explicitly separate from true reconstructed historical order books.
+- Order-book impact estimator with average fill, notional, partial-depth remainder and snapshot price impact; no real orders are transmitted.
+
 - Responsive terminal interface with adjustable candle width (2–24 px), spacing (0–16 px), chart height (300–1000 px), volume height (50–300 px), and zoom (1–200x).
 - EMA20/EMA50, VWAP and approximate support/resistance overlays, OHLC labels, volume panel.
 - Public spot candle REST adapter options for Binance, Bybit, Bitget, OKX; Binance spot websocket candles and mini-ticker.
