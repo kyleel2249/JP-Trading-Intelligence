@@ -7,7 +7,7 @@ const timeframes={'1m':'1','3m':'3','5m':'5','15m':'15','30m':'30','1h':'60','2h
 const urls={binance:'https://api.binance.com',bitget:'https://api.bitget.com',bybit:'https://api.bybit.com',okx:'https://www.okx.com',kraken:'https://api.kraken.com',coinbase:'https://api.exchange.coinbase.com'};
 function split(s){const x=sym(s).split('/');return{x:x[0]||'BTC',y:x[1]||'USDT'}}
 function okxId(s){const {x,y}=split(s);return x+'-'+y}
-async function request(url){const r=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'},signal:AbortSignal.timeout(12000});if(!r.ok)throw Error('HTTP '+r.status+' '+url.split('?')[0]);return r.json()}
+async function request(url){const r=await fetch(url,{cache:'no-store',headers:{Accept:'application/json'},signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error('HTTP '+r.status+' '+url.split('?')[0]);return r.json()}
 class JPTIPublicExchanges{
  constructor(){this.status={};this.socket=null;this.activeExchange=null}
  init(){return true}
