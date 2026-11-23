@@ -1,0 +1,19 @@
+name = "jp-trading-intelligence"
+main = "worker/index.js"
+compatibility_date = "2026-11-23"
+workers_dev = true
+
+[assets]
+directory = "."
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jp-trading-intelligence"
+database_id = "REPLACE_WITH_CLOUDFLARE_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[vars]
+ENVIRONMENT = "production"
+LIVE_TRADING_ENABLED = "false"
