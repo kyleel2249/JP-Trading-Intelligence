@@ -32,3 +32,14 @@ CREATE TABLE IF NOT EXISTS paper_orders (
  pnl REAL
 );
 CREATE INDEX IF NOT EXISTS paper_orders_symbol_idx ON paper_orders(symbol);
+
+CREATE TABLE IF NOT EXISTS session5_records (
+ id TEXT PRIMARY KEY,
+ record_type TEXT NOT NULL CHECK(record_type IN ('event','outcome','audit')),
+ payload TEXT NOT NULL,
+ symbol TEXT,
+ session_name TEXT,
+ created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS session5_records_type_created_idx ON session5_records(record_type,created_at DESC);
+CREATE INDEX IF NOT EXISTS session5_records_symbol_idx ON session5_records(symbol,created_at DESC);
