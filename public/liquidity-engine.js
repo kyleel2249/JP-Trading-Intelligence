@@ -4,8 +4,8 @@ const MAX_EVENTS=500,MAX_LEVELS=100;
 const keyOf=p=>Number(p).toPrecision(12);
 const finite=n=>Number.isFinite(+n)&&+n>0;
 class LiquidityBehaviorEngine{
- constructor(options={}){this.maxEvents=options.maxEvents||MAX_EVENTS;this.levelLimit=options.levelLimit||MAX_LEVELS;this.events=[];this.previous=null;this.lastPrice=null;this.lastCandle=null;this.sequence=0;this.context={exchange:"unknown",symbol:"unknown",market:"unknown"}}
- setContext(context={}){this.context={...this.context,...context};this.previous=null;this.lastPrice=null;this.lastCandle=null;return this}
+ constructor(options={}){this.maxEvents=options.maxEvents||MAX_EVENTS;this.levelLimit=options.levelLimit||MAX_LEVELS;this.events=[];this.previous=null;this.lastPrice=null;this.lastCandle=null;this.lastCandleTime=null;this.lastSweepKey='';this.lastSweepTs=0;this.sequence=0;this.context={exchange:"unknown",symbol:"unknown",market:"unknown"}}
+ setContext(context={}){this.context={...this.context,...context};this.previous=null;this.lastPrice=null;this.lastCandle=null;this.lastCandleTime=null;this.lastSweepKey='';this.lastSweepTs=0;this.events=[];this.sequence=0;return this}
  emit(type,ts,price,side,qty,confidence,detail,source="snapshot"){
   const event={id:++this.sequence,ts:Number(ts)||Date.now(),type,price:finite(price)?+price:null,side:side||"unknown",qty:finite(qty)?+qty:0,confidence,source,exchange:this.context.exchange,symbol:this.context.symbol,market:this.context.market,detail:String(detail||"")};
   this.events.push(event);if(this.events.length>this.maxEvents)this.events.splice(0,this.events.length-this.maxEvents);return event
@@ -57,7 +57,7 @@ class LiquidityBehaviorEngine{
  sweep(price,ts=Date.now()){
   if(!finite(price)||!this.previous)return null;
   const levels=[...this.previous.bids,...this.previous.asks],near=levels.filter(x=>Math.abs(x.price-price)/price<.002).sort((a,b)=>Math.abs(a.price-price)-Math.abs(b.price-price))[0];
-  if(!near)return null;
+  if(!near)return null;const sweepKey=near.side+":"+keyOf(near.price);if(this.lastSweepKey===sweepKey&&ts-this.lastSweepTs<15000)return null;this.lastSweepKey=sweepKey;this.lastSweepTs=ts;
   return this.emit("sweep_candidate",ts,near.price,near.side,near.qty,"low","Price approached a recently displayed liquidity level; no tick-level queue depletion proof","heuristic")
  }
  timeline(limit=80){return this.events.slice(-Math.max(1,limit)).reverse()}
