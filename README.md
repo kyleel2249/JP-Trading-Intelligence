@@ -3,6 +3,8 @@
 Cloudflare-first multi-market research and trading terminal. This initial foundation provides a dark, full-width chart workspace, local candle-based strategy signals, paper-only ticket, browser journal and initial API Worker.
 
 ## Included
+- Liquidity Behavior & Footprint Engine 2.0: bounded 500-event synchronized timeline joining sampled price-level depth diffs, venue trade prints and candle reactions. New/disappearing levels, quantity reductions, replenishment estimates, trade/quote interactions, failed breaks, displacement and low-confidence absorption candidates are tagged with timestamps, venue, symbol, market and evidence confidence.
+- Event classifications distinguish observed data from inference. Sampled depth changes cannot prove cancellations, spoofing, queue priority or intent; trade/depth timestamps are not a fully synchronized exchange-native event stream. The timeline is session-memory only and resets on market/symbol changes.
 - Persistent local order-book depth snapshots (8-second sampling, 240-point cap) keyed by exchange/instrument/symbol; local bid/ask liquidity change comparisons, snapshot imbalance history and chart liquidity heatmap bands.
 - Candle-level aggressor delta table from buffered live trade prints, with unknown-side volume and limited-history warnings; flow is venue-local, not consolidated.
 - Liquidity heatmap toggle on the chart; historical depth samples overlay recent candles, and snapshot-based depth trends remain explicitly separate from true reconstructed historical order books.
