@@ -6,6 +6,7 @@ Cloudflare-first multi-market research and trading terminal. This initial founda
 - Responsive terminal interface with adjustable candle width (2–24 px), spacing (0–16 px), chart height (300–1000 px), volume height (50–300 px), and zoom (1–200x).
 - EMA20/EMA50, VWAP and approximate support/resistance overlays, OHLC labels, volume panel.
 - Public spot candle REST adapter options for Binance, Bybit, Bitget, OKX; Binance spot websocket candles and mini-ticker.
+- Live Bitget trade-flow stream on the chart: rolling 60-second buy/sell volume, notional, net delta, aggressor pressure, side-coverage, buffered CVD, latest trade marker and sweep/reclaim watch labels; stream reconnects with exponential backoff and is clearly venue-specific.
 - Eight candle-driven strategy prototypes: EMA trend, sweep/reclaim, FVG, RSI reversal, VWAP reversion, range breakout, volume impulse, structure BOS.
 - Twelve intelligence status modules spanning technical, structure, order-flow/liquidity, volume, regime, news, fundamentals, macro, forecast, portfolio, execution and integrity.
 - Alpha/confluence views, local paper ticket, browser paper account, forecast journal/export and simplified candle research test.
